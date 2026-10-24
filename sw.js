@@ -1,4 +1,4 @@
-var CACHE = 'diario-v18';
+var CACHE = 'diario-v19';
 var SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
 
 self.addEventListener('install', function (e) {

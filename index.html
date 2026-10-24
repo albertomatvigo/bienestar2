@@ -520,6 +520,9 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
       tomb = t ? JSON.parse(t) : {};
       if (!tomb || typeof tomb !== 'object' || Array.isArray(tomb)) { tomb = {}; }
     } catch (e2) { tomb = {}; }
+    // Descarta claves que no sean una fecha aaaa-mm-dd (restos de una version anterior del script).
+    Object.keys(data).forEach(function (k) { if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) { delete data[k]; } });
+    Object.keys(tomb).forEach(function (k) { if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) { delete tomb[k]; } });
   }
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(data)); localStorage.setItem(TKEY, JSON.stringify(tomb)); setEstado(true); }
@@ -996,14 +999,14 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
   function setSync(kind) {
     var m = '';
     if (kind === 'work') { m = 'Sincronizando...'; }
-    else if (kind === 'ok') { m = scriptV >= 17 ? ('Sincronizado con Google Sheets (script v' + scriptV + ')') : 'Sincronizado, pero el script de la hoja es antiguo: publica una nueva versi\u00f3n en Apps Script.'; }
+    else if (kind === 'ok') { m = scriptV >= 19 ? ('Sincronizado con Google Sheets (script v' + scriptV + ')') : 'Sincronizado, pero el script de la hoja es antiguo: publica una nueva versi\u00f3n en Apps Script.'; }
     else if (kind === 'token') { m = 'Clave incorrecta. Revisa la clave en Informe.'; }
     else if (kind === 'err') { m = 'No se ha podido conectar con la hoja. Se reintentar\u00e1 m\u00e1s tarde.'; }
     else if (kind === 'url') { m = 'La direcci\u00f3n no parece de una aplicaci\u00f3n web de Google Apps Script.'; }
     else if (kind === 'falta') { m = 'Escribe la direcci\u00f3n y la clave.'; }
     else if (kind === 'off') { m = 'Sincronizaci\u00f3n desactivada. Tus datos siguen en la hoja.'; }
     $('sync').textContent = (kind === 'ok' || kind === 'work' || kind === 'token' || kind === 'err') ? m : '';
-    if (kind === 'ok' && scriptV < 17) { $('sync').style.color = '#B3472F'; } else { $('sync').style.color = ''; }
+    if (kind === 'ok' && scriptV < 19) { $('sync').style.color = '#B3472F'; } else { $('sync').style.color = ''; }
     $('estadoSync').textContent = m;
   }
   function post(c, body) {
@@ -1037,6 +1040,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
       var remote = res.entries || {};
       var push = {};
       Object.keys(remote).forEach(function (d) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { return; }
         var r = remote[d] || {};
         var ru = r.u || 0;
         var l = data[d];
