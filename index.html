@@ -20,7 +20,7 @@ h2{font-size:1.2rem;margin:0 0 4px}
 h3{font-size:1.05rem;margin:0 0 8px}
 p{margin:0}
 .sub{color:var(--tinta2);font-size:.95rem}
-section[hidden]{display:none}
+section[hidden],[hidden]{display:none!important}
 .bloque{padding:20px 0;border-top:1px solid var(--linea)}
 .bloque:first-of-type{border-top:0}
 .ayuda{color:var(--tinta2);font-size:.88rem;margin-bottom:10px}
@@ -127,6 +127,23 @@ td.num{text-align:center}
   table{min-width:0;font-size:10pt}
 }
 
+/* ---- historial ---- */
+#hPer button{padding:6px 11px;font-size:.88rem}
+.stat em{display:block;font-style:normal;font-size:.78rem;color:var(--tinta2);margin-top:2px}
+.stat b{font-size:1.5rem}
+.chip .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;border:1.5px solid #fff}
+.hc{position:relative;outline:none;border-radius:10px}
+.hc:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+.hc svg{touch-action:pan-y}
+.tip{position:absolute;top:4px;background:#fff;border:1px solid var(--linea);border-radius:10px;padding:6px 10px;font-size:.82rem;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.08);z-index:2;min-width:120px}
+.tip .tt{color:var(--tinta2);margin-bottom:3px}
+.tip .tr{display:flex;align-items:center;gap:7px}
+.tip .tr i{width:14px;height:3px;border-radius:2px;flex:none}
+.tip .tr b{font-size:1rem}
+.tip .tr span{color:var(--tinta2)}
+.ft{font-size:.95rem;margin:0 0 4px 4px}
+.grafico+.grafico{margin-top:10px}
+.vaciog{padding:18px 8px;text-align:center;color:var(--tinta2);font-size:.9rem}
 /* ---- vista compacta ---- */
 .esc{margin-top:12px}
 .esc:first-child{margin-top:0}
@@ -354,25 +371,41 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
 <!-- HISTORIAL -->
 <section id="tab-historial" hidden>
   <div class="bloque">
-    <h2>Resumen</h2>
-    <div class="stats">
-      <div class="stat"><b id="st-m7">-</b><span>Ánimo medio, últimos 7 días</span></div>
-      <div class="stat"><b id="st-m30">-</b><span>Ánimo medio, últimos 30 días</span></div>
-      <div class="stat"><b id="st-reg">-</b><span>Días registrados de los últimos 30</span></div>
-      <div class="stat"><b id="st-med">-</b><span>Días con medicación marcada de los últimos 30</span></div>
-      <div class="stat"><b id="st-sport">-</b><span>Minutos de deporte, últimos 7 días</span></div>
-      <div class="stat"><b id="st-sq">-</b><span>Calidad de sueño media, últimos 30 días</span></div>
+    <h2>Periodo</h2>
+    <div class="fila seg" id="hPer" style="margin-top:8px"></div>
+    <div class="fila" id="hCustom" hidden style="margin-top:8px">
+      <label for="hFrom" style="margin:0">Desde</label><input type="date" id="hFrom" style="max-width:165px">
+      <label for="hTo" style="margin:0">hasta</label><input type="date" id="hTo" style="max-width:165px">
     </div>
+    <p class="ayuda" id="hRango" style="margin-top:8px"></p>
+    <details class="plega" id="det-hf" style="margin-top:6px">
+      <summary><h2>Campos</h2><span class="resumen" id="res-hf"></span></summary>
+      <div class="chips" id="hChips"></div>
+      <div class="fila" style="margin-top:10px">
+        <button type="button" class="chip" id="hSep" aria-pressed="false">Ver cada campo por separado</button>
+      </div>
+      <p class="ayuda" id="hAviso" style="margin-top:8px">Se pueden superponer hasta 3 campos. Con m&aacute;s, cada uno va en su propio gr&aacute;fico.</p>
+    </details>
   </div>
   <div class="bloque">
-    <h2>Últimos 30 días</h2>
-    <div class="grafico" id="grafico" role="img" aria-label="Gráfico de ánimo, estado físico y ansiedad de los últimos 30 días"></div>
-    <div class="leyenda">
-      <span><i style="background:#2F6F73"></i>Ánimo</span>
-      <span><i style="background:#7A5C99"></i>Físico</span>
-      <span><i style="background:#C0693A"></i>Ansiedad</span>
-    </div>
-    <p class="ayuda" style="margin-top:8px">En todas las escalas, 5 es lo mejor (en ansiedad, 5 significa sin ansiedad).</p>
+    <h2>Resumen</h2>
+    <div class="stats" id="hStats" style="margin-top:8px"></div>
+  </div>
+  <div class="bloque">
+    <h2>Evoluci&oacute;n</h2>
+    <div class="leyenda" id="hLeyenda"></div>
+    <div id="hCharts" style="margin-top:8px"></div>
+    <p class="ayuda" id="hNota" style="margin-top:8px"></p>
+    <p class="ayuda">En todas las escalas, 5 es lo mejor (en ansiedad, 5 significa sin ansiedad). Toca o pasa el cursor por el gr&aacute;fico para ver el valor de cada d&iacute;a.</p>
+    <details class="plega" id="det-ht" style="margin-top:6px">
+      <summary><h2>Ver como tabla</h2></summary>
+      <div class="tablawrap"><table id="hTabla" style="min-width:0"><thead></thead><tbody></tbody></table></div>
+    </details>
+  </div>
+  <div class="bloque">
+    <h2>Sue&ntilde;o y deporte</h2>
+    <div id="hSleep" style="margin-top:8px"></div>
+    <div id="hSport" style="margin-top:12px"></div>
   </div>
   <div class="bloque">
     <div class="calcab">
@@ -773,58 +806,428 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
     days.forEach(function (d) { var e = data[d]; if (e && e[key]) { s += e[key]; c++; } });
     return c ? fmt1(s / c) : '-';
   }
-  function renderStats() {
-    var d7 = lastDays(7), d30 = lastDays(30);
-    $('st-m7').textContent = avgOf(d7, 'mood');
-    $('st-m30').textContent = avgOf(d30, 'mood');
-    var reg = 0, med = 0;
-    d30.forEach(function (d) {
-      var e = data[d];
-      if (e) { reg++; if (Object.keys(norm(e).meds).length) { med++; } }
+  /* ---------- historial: periodo, campos, resumen y graficos ---------- */
+  var HKEY = 'diario_bienestar_hist';
+  var HF = [
+    { k: 'mood', n: '\u00c1nimo' }, { k: 'phys', n: 'F\u00edsico' }, { k: 'anx', n: 'Ansiedad' },
+    { k: 'sq', n: 'Calidad de sue\u00f1o' }, { k: 'ag', n: 'Agilidad mental' }, { k: 'co', n: 'Concentraci\u00f3n' },
+    { k: 'mo', n: 'Motivaci\u00f3n' }, { k: 'cl', n: 'Satisf. clases' }, { k: 'rel', n: 'Relaciones sociales' },
+    { k: 'com', n: 'Comunicaci\u00f3n' }, { k: 'lib', n: 'Libido' }, { k: 'spq', n: 'Satisf. deporte' }
+  ];
+  var HNAME = {};
+  HF.forEach(function (f) { HNAME[f.k] = f.n; });
+  var HCOL = ['#2a78d6', '#eb6834', '#1baf7a'];
+  var HPER = [['7', '7 d\u00edas'], ['30', '30 d\u00edas'], ['90', '90 d\u00edas'], ['180', '6 meses'], ['365', '1 a\u00f1o'], ['all', 'Todo'], ['custom', 'Personalizado']];
+  var hist = { per: '30', from: '', to: '', sel: ['mood', 'phys', 'anx'], slot: { mood: 0, phys: 1, anx: 2 }, sep: false };
+  var NS = 'http://www.w3.org/2000/svg';
+  var ISO = /^\d{4}-\d{2}-\d{2}$/;
+
+  function histLoad() {
+    try {
+      var o = JSON.parse(localStorage.getItem(HKEY) || 'null');
+      if (!o || typeof o !== 'object') { return; }
+      if (HPER.some(function (p) { return p[0] === o.per; })) { hist.per = o.per; }
+      if (ISO.test(o.from || '')) { hist.from = o.from; }
+      if (ISO.test(o.to || '')) { hist.to = o.to; }
+      if (Array.isArray(o.sel)) { hist.sel = o.sel.filter(function (k, i) { return HNAME[k] && o.sel.indexOf(k) === i; }); }
+      hist.slot = {};
+      var usados = {};
+      if (o.slot && typeof o.slot === 'object') {
+        Object.keys(o.slot).forEach(function (k) {
+          var v = o.slot[k];
+          if (hist.sel.indexOf(k) >= 0 && (v === 0 || v === 1 || v === 2) && !usados[v]) { hist.slot[k] = v; usados[v] = true; }
+        });
+      }
+      hist.sep = !!o.sep;
+    } catch (e) { }
+  }
+  function histSave() {
+    try { localStorage.setItem(HKEY, JSON.stringify(hist)); } catch (e) { }
+  }
+  // Cada campo conserva su color mientras siga seleccionado.
+  function ensureSlots() {
+    var usados = {};
+    hist.sel.forEach(function (k) { if (hist.slot[k] !== undefined) { usados[hist.slot[k]] = true; } });
+    hist.sel.forEach(function (k) {
+      if (hist.slot[k] !== undefined) { return; }
+      for (var s = 0; s < 3; s++) { if (!usados[s]) { hist.slot[k] = s; usados[s] = true; return; } }
     });
-    var sp7 = 0;
-    d7.forEach(function (d) {
-      if (data[d]) { var m = parseInt(norm(data[d]).spm, 10); if (m > 0) { sp7 += m; } }
-    });
-    $('st-sport').textContent = sp7 + ' min';
-    $('st-sq').textContent = avgOf(d30, 'sq');
-    $('st-reg').textContent = reg + ' de 30';
-    $('st-med').textContent = med + ' de 30';
+  }
+  function toggleField(k) {
+    var i = hist.sel.indexOf(k);
+    if (i >= 0) { hist.sel.splice(i, 1); delete hist.slot[k]; }
+    else { hist.sel.push(k); }
+    ensureSlots(); histSave(); renderHist();
   }
 
-  function renderChart() {
-    var W = 600, H = 230, L = 30, R = 10, T = 12, B = 26;
-    var days = lastDays(30);
-    var iw = W - L - R, ih = H - T - B;
-    function X(i) { return L + iw * i / 29; }
-    function Y(v) { return T + ih * (5 - v) / 4; }
-    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
-    for (var v = 1; v <= 5; v++) {
-      s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="#D3DEDB" stroke-width="1"/>';
-      s += '<text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" font-size="11" fill="#5A7075" text-anchor="end">' + v + '</text>';
+  function daysBetween(a, b) { return Math.round((parse(b).getTime() - parse(a).getTime()) / 86400000); }
+  function listDays(from, to) {
+    var out = [], d = from, n = 0;
+    while (d <= to && n < 900) { out.push(d); d = addDays(d, 1); n++; }
+    return out;
+  }
+  function histRange() {
+    var t = todayStr(), from, to = t;
+    if (hist.per === 'custom') {
+      from = hist.from || addDays(t, -29);
+      to = hist.to || t;
+      if (to > t) { to = t; }
+      if (from > to) { from = to; }
+    } else if (hist.per === 'all') {
+      var ks = Object.keys(data).sort();
+      from = ks.length ? ks[0] : addDays(t, -29);
+    } else {
+      from = addDays(t, -(parseInt(hist.per, 10) - 1));
     }
-    [[0, 'start'], [14, 'middle'], [29, 'end']].forEach(function (p) {
-      var dt = parse(days[p[0]]);
-      s += '<text x="' + X(p[0]) + '" y="' + (H - 6) + '" font-size="11" fill="#5A7075" text-anchor="' + p[1] + '">' + pad(dt.getDate()) + '/' + pad(dt.getMonth() + 1) + '</text>';
+    if (daysBetween(from, to) > 799) { from = addDays(to, -799); }
+    return { from: from, to: to };
+  }
+  function dm(d, yy) { var p = d.split('-'); return p[2] + '/' + p[1] + (yy ? '/' + p[0].slice(2) : ''); }
+  function longDate(d) { return parse(d).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
+
+  function histBuckets(days) {
+    var size = days.length <= 100 ? 1 : (days.length <= 400 ? 7 : 30);
+    var groups = [];
+    for (var i = 0; i < days.length; i += size) { groups.push(days.slice(i, i + size)); }
+    var yy = days.length > 200;
+    return {
+      size: size, groups: groups,
+      xs: groups.map(function (g) { return dm(g[0], yy); }),
+      longs: groups.map(function (g) { return g.length > 1 ? (dm(g[0], true) + ' \u2013 ' + dm(g[g.length - 1], true)) : longDate(g[0]); })
+    };
+  }
+  function numOf(d, key) {
+    var e = data[d];
+    if (!e) { return 0; }
+    var v = parseFloat(e[key]);
+    return v > 0 ? v : 0;
+  }
+  function avgRange(days, key) {
+    var s = 0, c = 0;
+    days.forEach(function (d) { var v = numOf(d, key); if (v > 0) { s += v; c++; } });
+    return c ? s / c : null;
+  }
+  function sumRange(days, key) {
+    var s = 0;
+    days.forEach(function (d) { s += numOf(d, key); });
+    return s;
+  }
+
+  function tile(box, v, label, extra) {
+    var t = document.createElement('div');
+    t.className = 'stat';
+    var b = document.createElement('b'); b.textContent = v;
+    var sp = document.createElement('span'); sp.textContent = label;
+    t.appendChild(b); t.appendChild(sp);
+    if (extra) { var em = document.createElement('em'); em.textContent = extra; t.appendChild(em); }
+    box.appendChild(t);
+  }
+
+  function renderHistControls(r, days) {
+    var per = $('hPer');
+    per.innerHTML = '';
+    HPER.forEach(function (p) {
+      var bt = document.createElement('button');
+      bt.type = 'button';
+      bt.setAttribute('data-hp', p[0]);
+      bt.setAttribute('aria-pressed', hist.per === p[0] ? 'true' : 'false');
+      bt.textContent = p[1];
+      per.appendChild(bt);
     });
-    [['mood', '#2F6F73', ''], ['phys', '#7A5C99', ''], ['anx', '#C0693A', '6 4']].forEach(function (ser) {
-      var path = '', pts = '', prev = false;
-      days.forEach(function (d, i) {
-        var e = data[d];
-        var val = e ? e[ser[0]] : 0;
-        if (val) {
-          path += (prev ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(val).toFixed(1) + ' ';
-          pts += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(val).toFixed(1) + '" r="3.2" fill="' + ser[1] + '"/>';
-          prev = true;
-        } else { prev = false; }
-      });
-      if (path) {
-        s += '<path d="' + path + '" fill="none" stroke="' + ser[1] + '" stroke-width="2.2" stroke-linejoin="round"' + (ser[2] ? ' stroke-dasharray="' + ser[2] + '"' : '') + '/>';
-        s += pts;
+    $('hCustom').hidden = hist.per !== 'custom';
+    $('hFrom').value = r.from; $('hTo').value = r.to;
+    $('hFrom').max = todayStr(); $('hTo').max = todayStr();
+    $('hRango').textContent = 'Del ' + parse(r.from).toLocaleDateString('es-ES') + ' al ' + parse(r.to).toLocaleDateString('es-ES') + ' (' + days.length + ' d\u00edas)';
+    var chips = $('hChips');
+    chips.innerHTML = '';
+    var overlay = !hist.sep && hist.sel.length <= 3;
+    HF.forEach(function (f) {
+      var on = hist.sel.indexOf(f.k) >= 0;
+      var c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'chip' + (on ? ' on' : '');
+      c.setAttribute('data-hf', f.k);
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (on && overlay && hist.slot[f.k] !== undefined) {
+        var sw = document.createElement('i');
+        sw.className = 'sw';
+        sw.style.background = HCOL[hist.slot[f.k]];
+        c.appendChild(sw);
       }
+      c.appendChild(document.createTextNode(f.n));
+      chips.appendChild(c);
     });
-    s += '</svg>';
-    $('grafico').innerHTML = s;
+    $('hSep').className = 'chip' + (hist.sep ? ' on' : '');
+    $('hSep').setAttribute('aria-pressed', hist.sep ? 'true' : 'false');
+    $('res-hf').textContent = hist.sel.map(function (k) { return HNAME[k]; }).join(', ');
+  }
+
+  function renderHistStats(r, days) {
+    var box = $('hStats');
+    box.innerHTML = '';
+    var prev = null;
+    if (hist.per !== 'all') {
+      var pt = addDays(r.from, -1);
+      prev = listDays(addDays(pt, -(days.length - 1)), pt);
+    }
+    hist.sel.forEach(function (k) {
+      var a = avgRange(days, k);
+      var extra = '';
+      if (a !== null && prev) {
+        var pa = avgRange(prev, k);
+        if (pa !== null) {
+          var df = a - pa;
+          extra = Math.abs(df) < 0.05 ? 'Igual que el periodo anterior' : ((df > 0 ? '+' : '\u2212') + fmt1(Math.abs(df)) + ' frente al periodo anterior');
+        }
+      }
+      tile(box, a === null ? '-' : fmt1(a), HNAME[k] + ', media', extra);
+    });
+    var reg = 0, med = 0, dep = 0;
+    days.forEach(function (d) {
+      var e = data[d];
+      if (!e) { return; }
+      reg++;
+      var ne = norm(e);
+      if (Object.keys(ne.meds).length) { med++; }
+      if (ne.sp.length || parseInt(ne.spm, 10) > 0) { dep++; }
+    });
+    tile(box, reg + ' de ' + days.length, 'D\u00edas registrados');
+    tile(box, med + ' de ' + days.length, 'D\u00edas con medicaci\u00f3n');
+    tile(box, sumRange(days, 'spm') + ' min', 'Deporte', dep + (dep === 1 ? ' d\u00eda' : ' d\u00edas') + ' con actividad');
+    var hs = avgRange(days, 'sleep');
+    tile(box, hs === null ? '-' : fmt1(hs) + ' h', 'Horas de sue\u00f1o, media');
+  }
+
+  /* ---- graficos (SVG, sin librerias) ---- */
+  function sv(tag, attrs, parent) {
+    var el = document.createElementNS(NS, tag);
+    Object.keys(attrs || {}).forEach(function (a) { el.setAttribute(a, attrs[a]); });
+    if (parent) { parent.appendChild(el); }
+    return el;
+  }
+  function svText(parent, x, y, anchor, fill, weight, txt) {
+    var t = sv('text', { x: x, y: y, 'font-size': 11, fill: fill, 'text-anchor': anchor }, parent);
+    if (weight) { t.setAttribute('font-weight', weight); }
+    t.textContent = txt;
+    return t;
+  }
+
+  function buildChart(o) {
+    var n = o.xs.length, W = 600, H = o.h || 220, L = 32, R = o.endLabels ? 38 : 12, T = 12, B = 26;
+    var iw = W - L - R, ih = H - T - B;
+    var box = document.createElement('div');
+    box.className = 'hc';
+    box.tabIndex = 0;
+    box.setAttribute('role', 'img');
+    box.setAttribute('aria-label', o.label);
+    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, width: '100%' }, box);
+    svg.style.display = 'block';
+    function X(i) {
+      if (o.kind === 'bar') { return L + iw * (i + 0.5) / n; }
+      return n > 1 ? L + iw * i / (n - 1) : L + iw / 2;
+    }
+    function Y(v) { return T + ih * (o.yMax - v) / (o.yMax - o.yMin); }
+    o.ticks.forEach(function (t) {
+      sv('line', { x1: L, x2: W - R, y1: Y(t), y2: Y(t), stroke: '#D3DEDB', 'stroke-width': 1 }, svg);
+      svText(svg, L - 6, Y(t) + 4, 'end', '#5A7075', '', String(t));
+    });
+    var xi = [0, Math.floor((n - 1) / 2), n - 1].filter(function (v, i, a) { return a.indexOf(v) === i; });
+    xi.forEach(function (i, j) {
+      var anchor = (o.kind === 'bar' || xi.length === 1) ? 'middle' : (j === 0 ? 'start' : (j === xi.length - 1 ? 'end' : 'middle'));
+      svText(svg, o.kind === 'bar' ? X(i) : (j === 0 ? L : (j === xi.length - 1 ? W - R : X(i))), H - 6, anchor, '#5A7075', '', o.xs[i]);
+    });
+    if (o.kind === 'bar') {
+      var bw = Math.min(24, iw / n * 0.7);
+      var base = Y(0);
+      o.series[0].vals.forEach(function (v, i) {
+        if (!(v > 0)) { return; }
+        var x0 = X(i) - bw / 2, y = Y(v), rr = Math.min(4, base - y, bw / 2);
+        sv('path', { d: 'M' + x0 + ' ' + base + ' V' + (y + rr) + ' Q' + x0 + ' ' + y + ' ' + (x0 + rr) + ' ' + y + ' H' + (x0 + bw - rr) + ' Q' + (x0 + bw) + ' ' + y + ' ' + (x0 + bw) + ' ' + (y + rr) + ' V' + base + ' Z', fill: o.series[0].color }, svg);
+      });
+    } else {
+      var placed = [];
+      o.series.forEach(function (ser) {
+        var d = '', prev = false, last = -1;
+        ser.vals.forEach(function (v, i) {
+          if (v == null) { prev = false; return; }
+          d += (prev ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1) + ' ';
+          prev = true; last = i;
+        });
+        if (!d) { return; }
+        sv('path', { d: d, fill: 'none', stroke: ser.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+        ser.vals.forEach(function (v, i) {
+          if (v == null) { return; }
+          if (n <= 60 || i === last) {
+            sv('circle', { cx: X(i).toFixed(1), cy: Y(v).toFixed(1), r: 4, fill: ser.color, stroke: '#FBFCFB', 'stroke-width': 2 }, svg);
+          }
+        });
+        if (o.endLabels && last >= 0) {
+          var yy = Y(ser.vals[last]) + 4;
+          if (placed.every(function (p) { return Math.abs(p - yy) >= 13; })) {
+            placed.push(yy);
+            svText(svg, X(last) + 9, yy, 'start', '#1E3338', '600', o.fmt(ser.vals[last]));
+          }
+        }
+      });
+    }
+    var cross = sv('line', { y1: T, y2: T + ih, stroke: '#5A7075', 'stroke-width': 1, 'stroke-opacity': 0.6 }, svg);
+    cross.style.display = 'none';
+    var tip = document.createElement('div');
+    tip.className = 'tip';
+    tip.hidden = true;
+    box.appendChild(tip);
+    var cur = n - 1;
+    function hide() { cross.style.display = 'none'; tip.hidden = true; }
+    function show(i) {
+      cur = i;
+      cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i)); cross.style.display = '';
+      tip.hidden = false;
+      tip.textContent = '';
+      var dd = document.createElement('div'); dd.className = 'tt'; dd.textContent = o.longs[i]; tip.appendChild(dd);
+      o.series.forEach(function (ser) {
+        var row = document.createElement('div'); row.className = 'tr';
+        var key = document.createElement('i'); key.style.background = ser.color;
+        var b = document.createElement('b'); b.textContent = ser.vals[i] == null ? '-' : o.fmt(ser.vals[i]);
+        var nm = document.createElement('span'); nm.textContent = ser.name;
+        row.appendChild(key); row.appendChild(b); row.appendChild(nm); tip.appendChild(row);
+      });
+      var pct = X(i) / W * 100;
+      if (pct > 58) { tip.style.left = ''; tip.style.right = (100 - pct + 2) + '%'; }
+      else { tip.style.right = ''; tip.style.left = (pct + 2) + '%'; }
+    }
+    svg.addEventListener('pointermove', function (ev) {
+      var r = svg.getBoundingClientRect();
+      if (!r.width) { return; }
+      var x = (ev.clientX - r.left) * W / r.width;
+      var i = o.kind === 'bar' ? Math.floor((x - L) / iw * n) : (n > 1 ? Math.round((x - L) / iw * (n - 1)) : 0);
+      show(Math.max(0, Math.min(n - 1, i)));
+    });
+    svg.addEventListener('pointerleave', function (ev) { if (ev.pointerType === 'mouse') { hide(); } });
+    box.addEventListener('focus', function () { show(cur); });
+    box.addEventListener('blur', hide);
+    box.addEventListener('keydown', function (ev) {
+      if (ev.key === 'ArrowLeft') { show(Math.max(0, cur - 1)); ev.preventDefault(); }
+      else if (ev.key === 'ArrowRight') { show(Math.min(n - 1, cur + 1)); ev.preventDefault(); }
+      else if (ev.key === 'Escape') { hide(); }
+    });
+    return box;
+  }
+
+  function hasData(series) {
+    return series.some(function (s) { return s.vals.some(function (v) { return v != null && v > 0; }); });
+  }
+  function card(box, title, el) {
+    var c = document.createElement('div');
+    c.className = 'grafico';
+    if (title) { var h = document.createElement('h3'); h.className = 'ft'; h.textContent = title; c.appendChild(h); }
+    c.appendChild(el);
+    box.appendChild(c);
+  }
+  function emptyMsg(txt) {
+    var m = document.createElement('div');
+    m.className = 'vaciog';
+    m.textContent = txt;
+    return m;
+  }
+  function niceMax(v) {
+    var steps = [30, 60, 90, 120, 180, 240, 300, 420, 600, 900, 1200, 1800, 2400, 3600, 6000, 12000];
+    for (var i = 0; i < steps.length; i++) { if (v <= steps[i]) { return steps[i]; } }
+    return Math.ceil(v / 1000) * 1000;
+  }
+
+  function renderHistCharts(days) {
+    var box = $('hCharts');
+    box.innerHTML = '';
+    var bk = histBuckets(days);
+    $('hNota').textContent = bk.size > 1 ? ('Cada punto es la media de ' + bk.size + ' d\u00edas.') : '';
+    var overlay = !hist.sep && hist.sel.length <= 3;
+    $('hAviso').textContent = hist.sel.length > 3 ? 'Con m\u00e1s de 3 campos, cada uno se muestra en su propio gr\u00e1fico.' : 'Se pueden superponer hasta 3 campos. Con m\u00e1s, cada uno va en su propio gr\u00e1fico.';
+    var leg = $('hLeyenda');
+    leg.innerHTML = '';
+    var series = hist.sel.map(function (k, idx) {
+      return {
+        key: k, name: HNAME[k],
+        color: overlay ? HCOL[hist.slot[k] !== undefined ? hist.slot[k] : idx % 3] : HCOL[0],
+        vals: bk.groups.map(function (g) { return avgRange(g, k); })
+      };
+    });
+    var base = { kind: 'line', xs: bk.xs, longs: bk.longs, yMin: 1, yMax: 5, ticks: [1, 2, 3, 4, 5], fmt: fmt1 };
+    if (!series.length) { box.appendChild(emptyMsg('Elige al menos un campo en "Campos".')); }
+    else if (overlay) {
+      series.forEach(function (s) {
+        var sp = document.createElement('span');
+        var i = document.createElement('i'); i.style.background = s.color;
+        sp.appendChild(i); sp.appendChild(document.createTextNode(s.name));
+        leg.appendChild(sp);
+      });
+      if (!hasData(series)) { card(box, '', emptyMsg('Sin datos en este periodo.')); }
+      else {
+        var o = {}; Object.keys(base).forEach(function (k) { o[k] = base[k]; });
+        o.series = series; o.endLabels = true; o.h = 230;
+        o.label = 'Gr\u00e1fico de ' + series.map(function (s) { return s.name; }).join(', ') + ' del ' + bk.longs[0].split(' \u2013 ')[0] + ' al ' + bk.longs[bk.longs.length - 1].split(' \u2013 ').pop();
+        card(box, '', buildChart(o));
+      }
+    } else {
+      series.forEach(function (s) {
+        if (!hasData([s])) { card(box, s.name, emptyMsg('Sin datos en este periodo.')); return; }
+        var o = {}; Object.keys(base).forEach(function (k) { o[k] = base[k]; });
+        o.series = [s]; o.endLabels = true; o.h = 150; o.label = 'Gr\u00e1fico de ' + s.name;
+        card(box, s.name, buildChart(o));
+      });
+    }
+
+    // sueno y deporte: dos graficos separados (escalas distintas, nunca doble eje)
+    var sl = $('hSleep'), sp = $('hSport');
+    sl.innerHTML = ''; sp.innerHTML = '';
+    var hs = [{ name: 'Horas de sue\u00f1o', color: HCOL[0], vals: bk.groups.map(function (g) { return avgRange(g, 'sleep'); }) }];
+    var mx = 0;
+    hs[0].vals.forEach(function (v) { if (v != null && v > mx) { mx = v; } });
+    var ym = Math.max(10, Math.ceil(mx));
+    if (ym % 2) { ym++; }
+    var tk = []; for (var t = 0; t <= ym; t += 2) { tk.push(t); }
+    if (!hasData(hs)) { card(sl, 'Horas de sue\u00f1o', emptyMsg('Sin datos en este periodo.')); }
+    else {
+      card(sl, bk.size > 1 ? 'Horas de sue\u00f1o (media)' : 'Horas de sue\u00f1o', buildChart({ kind: 'line', xs: bk.xs, longs: bk.longs, series: hs, yMin: 0, yMax: ym, ticks: tk, fmt: fmt1, endLabels: true, h: 150, label: 'Gr\u00e1fico de horas de sue\u00f1o' }));
+    }
+    var ms = [{ name: 'Minutos de deporte', color: HCOL[0], vals: bk.groups.map(function (g) { return sumRange(g, 'spm'); }) }];
+    var mm = 0;
+    ms[0].vals.forEach(function (v) { if (v > mm) { mm = v; } });
+    var tl = bk.size === 1 ? 'Minutos de deporte' : (bk.size === 7 ? 'Minutos de deporte por semana' : 'Minutos de deporte por bloque de 30 d\u00edas');
+    if (!hasData(ms)) { card(sp, tl, emptyMsg('Sin datos en este periodo.')); }
+    else {
+      var yM = niceMax(mm);
+      card(sp, tl, buildChart({ kind: 'bar', xs: bk.xs, longs: bk.longs, series: ms, yMin: 0, yMax: yM, ticks: [0, yM / 2, yM], fmt: function (v) { return Math.round(v) + ' min'; }, h: 150, label: 'Gr\u00e1fico de minutos de deporte' }));
+    }
+
+    // tabla
+    var tb = $('hTabla');
+    var th = tb.querySelector('thead'), bd = tb.querySelector('tbody');
+    th.innerHTML = ''; bd.innerHTML = '';
+    var hr = document.createElement('tr');
+    ['Periodo'].concat(series.map(function (s) { return s.name; }), ['Horas de sue\u00f1o', 'Minutos de deporte']).forEach(function (x) {
+      var c = document.createElement('th'); c.textContent = x; hr.appendChild(c);
+    });
+    th.appendChild(hr);
+    bk.groups.forEach(function (g, gi) {
+      var tr = document.createElement('tr');
+      var vals = series.map(function (s) { return s.vals[gi]; }).concat([hs[0].vals[gi], ms[0].vals[gi]]);
+      var c0 = document.createElement('td'); c0.textContent = bk.longs[gi]; tr.appendChild(c0);
+      vals.forEach(function (v, vi) {
+        var c = document.createElement('td'); c.className = 'num';
+        c.textContent = (v == null || (vi === vals.length - 1 && !(v > 0))) ? '-' : (vi === vals.length - 1 ? String(Math.round(v)) : fmt1(v));
+        tr.appendChild(c);
+      });
+      bd.appendChild(tr);
+    });
+  }
+
+  function renderHist() {
+    ensureSlots();
+    var r = histRange();
+    var days = listDays(r.from, r.to);
+    renderHistControls(r, days);
+    renderHistStats(r, days);
+    renderHistCharts(days);
   }
 
   function renderCal() {
@@ -1024,7 +1427,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
   }
   function refresh() {
     if (activeTab === 'hoy') { renderHoy(); }
-    else if (activeTab === 'historial') { renderStats(); renderChart(); renderCal(); }
+    else if (activeTab === 'historial') { renderHist(); renderCal(); }
     else { renderInforme(); }
   }
   function sync() {
@@ -1091,7 +1494,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
       bs[i].setAttribute('aria-selected', bs[i].getAttribute('data-tab') === tab ? 'true' : 'false');
     }
     if (tab === 'hoy') { renderHoy(); }
-    if (tab === 'historial') { renderStats(); renderChart(); renderCal(); }
+    if (tab === 'historial') { renderHist(); renderCal(); }
     if (tab === 'informe') { renderInforme(); loadCfgInputs(); }
     window.scrollTo(0, 0);
   }
@@ -1109,6 +1512,8 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
     var tab = t.getAttribute('data-tab');
     var day = t.getAttribute('data-d');
     var per = t.getAttribute('data-per');
+    var hp = t.getAttribute('data-hp');
+    var hf = t.getAttribute('data-hf');
     var e;
     if (k) {
       var v = parseInt(t.getAttribute('data-v'), 10);
@@ -1146,6 +1551,11 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
       var sv = parseInt(t.getAttribute('data-v'), 10);
       e.sx[sxk] = (e.sx[sxk] === sv) ? 0 : sv;
       commit(cur); renderHoy();
+    } else if (hp) {
+      hist.per = hp;
+      if (hp === 'custom' && (!hist.from || !hist.to)) { hist.from = addDays(todayStr(), -29); hist.to = todayStr(); }
+      histSave(); renderHist();
+    } else if (hf) { toggleField(hf);
     } else if (tab) { show(tab); }
     else if (day) { goDay(day); show('hoy'); }
     else if (per !== null) { period = parseInt(per, 10); renderInforme(); }
@@ -1199,6 +1609,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
       commit(cur); renderHoy();
     }
     else if (t.id === 'btnRem') { addReminder(); }
+    else if (t.id === 'hSep') { hist.sep = !hist.sep; histSave(); renderHist(); }
     else if (t.id === 'btnPrint') { window.print(); }
     else if (t.id === 'btnCsv') { exportCsv(); }
     else if (t.id === 'btnJson') { exportJson(); }
@@ -1239,6 +1650,18 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
   $('incSx').addEventListener('change', function () {
     $('tabla').classList.toggle('sxoff', !this.checked);
   });
+  $('hFrom').addEventListener('change', function () {
+    if (!ISO.test(this.value)) { return; }
+    hist.from = this.value;
+    if (!hist.to || hist.to < hist.from) { hist.to = hist.from; }
+    histSave(); renderHist();
+  });
+  $('hTo').addEventListener('change', function () {
+    if (!ISO.test(this.value)) { return; }
+    hist.to = this.value;
+    if (!hist.from || hist.from > hist.to) { hist.from = hist.to; }
+    histSave(); renderHist();
+  });
   $('fileImport').addEventListener('change', function () {
     if (this.files && this.files[0]) { importJson(this.files[0]); }
   });
@@ -1250,6 +1673,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
   window.addEventListener('online', function () { sync(); });
 
   load();
+  histLoad();
   buildScales();
   show('hoy');
   sync();
