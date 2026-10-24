@@ -457,7 +457,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
   var CFG = 'diario_bienestar_cfg';
   var data = {};
   var tomb = {};
-  var syncTimer = null, syncing = false, again = false;
+  var syncTimer = null, syncing = false, again = false, scriptV = 0;
   var activeTab = 'hoy';
   var SC = {
     phys:   { e: ['&#x1F915;', '&#x1F623;', '&#x1F610;', '&#x1F60C;', '&#x1F4AA;'], l: ['Muy mal', 'Mal', 'Regular', 'Bien', 'Muy bien'] },
@@ -940,12 +940,12 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
     setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 600);
   }
   function exportCsv() {
-    var rows = [['fecha', 'calidad_sueno', 'sueno_horas', 'medicacion', 'complementos', 'fisico', 'animo', 'ansiedad_5_sin_ansiedad', 'energia', 'agilidad_mental', 'concentracion', 'motivacion', 'satisf_clases', 'satisf_relaciones', 'satisf_comunicacion', 'deporte', 'minutos_deporte', 'satisf_deporte', 'libido', 'sexo', 'efectos', 'notas']];
+    var rows = [['fecha', 'calidad_sueno', 'sueno_horas', 'medicacion', 'complementos', 'fisico', 'animo', 'ansiedad_5_sin_ansiedad', 'agilidad_mental', 'concentracion', 'motivacion', 'satisf_clases', 'satisf_relaciones', 'satisf_comunicacion', 'deporte', 'minutos_deporte', 'satisf_deporte', 'libido', 'sexo', 'efectos', 'notas', 'energia_retirada']];
     Object.keys(data).sort().forEach(function (d) {
       var e = norm(data[d]);
-      rows.push([d, e.sq || '', e.sleep, medText(e), supText(e), e.phys || '', e.mood || '', e.anx || '', e.energy || '', e.ag || '', e.co || '', e.mo || '',
+      rows.push([d, e.sq || '', e.sleep, medText(e), supText(e), e.phys || '', e.mood || '', e.anx || '', e.ag || '', e.co || '', e.mo || '',
         e.cl || '', e.rel || '', e.com || '', sportNames(e), e.spm, e.spq || '', e.lib || '', sxText(e),
-        e.fx.map(function (x) { return fxNames[x] || x; }).join(', '), e.note]);
+        e.fx.map(function (x) { return fxNames[x] || x; }).join(', '), e.note, e.energy || '']);
     });
     var txt = rows.map(function (r) { return r.map(csvCell).join(';'); }).join('\r\n');
     download('diario-bienestar-' + todayStr() + '.csv', '\ufeff' + txt, 'text/csv;charset=utf-8');
@@ -996,13 +996,14 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
   function setSync(kind) {
     var m = '';
     if (kind === 'work') { m = 'Sincronizando...'; }
-    else if (kind === 'ok') { m = 'Sincronizado con Google Sheets'; }
+    else if (kind === 'ok') { m = scriptV >= 17 ? ('Sincronizado con Google Sheets (script v' + scriptV + ')') : 'Sincronizado, pero el script de la hoja es antiguo: publica una nueva versi\u00f3n en Apps Script.'; }
     else if (kind === 'token') { m = 'Clave incorrecta. Revisa la clave en Informe.'; }
     else if (kind === 'err') { m = 'No se ha podido conectar con la hoja. Se reintentar\u00e1 m\u00e1s tarde.'; }
     else if (kind === 'url') { m = 'La direcci\u00f3n no parece de una aplicaci\u00f3n web de Google Apps Script.'; }
     else if (kind === 'falta') { m = 'Escribe la direcci\u00f3n y la clave.'; }
     else if (kind === 'off') { m = 'Sincronizaci\u00f3n desactivada. Tus datos siguen en la hoja.'; }
     $('sync').textContent = (kind === 'ok' || kind === 'work' || kind === 'token' || kind === 'err') ? m : '';
+    if (kind === 'ok' && scriptV < 17) { $('sync').style.color = '#B3472F'; } else { $('sync').style.color = ''; }
     $('estadoSync').textContent = m;
   }
   function post(c, body) {
@@ -1032,6 +1033,7 @@ details.plega>summary .resumen.emo{font-size:1.05rem;letter-spacing:.1em}
     var changed = 0;
     return post(c, { action: 'load' }).then(function (res) {
       if (!res || !res.ok) { throw new Error(res && res.error === 'token' ? 'token' : 'err'); }
+      scriptV = res.v || 0;
       var remote = res.entries || {};
       var push = {};
       Object.keys(remote).forEach(function (d) {
